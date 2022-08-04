@@ -1,0 +1,42 @@
+name: bimbo_delivery
+description: Bimbo delivery app
+
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.17.6 <3.0.0"
+
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.2
+
+  flutter_localizations:
+    sdk: flutter
+
+
+  intl: ^0.17.0
+  http: ^0.13.4
+  record: ^4.3.2
+  provider: ^6.0.2
+  path_provider: ^2.0.9
+  flutter_easyloading: ^3.0.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+
+  flutter_lints: ^2.0.0
+
+flutter:
+
+
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+

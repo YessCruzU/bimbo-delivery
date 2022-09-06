@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'custom_colors.dart';
 
 class Var {
-  static String urlService = '';
+  static String urlService = 'qoonmmnp91.execute-api.us-east-1.amazonaws.com';
 
   static ButtonStyle raisedButtonStyle = ElevatedButton.styleFrom(
     onPrimary: Colors.white,

@@ -118,9 +118,14 @@ class NetworkUtil {
       Map<String, dynamic>? headers,
       required Uri url,
       required FormData formData}) async {
-    var response = await Dio().post(url.toString(),
-        data: formData, options: Options(headers: headers));
+    try {
+      var response = await Dio().post(url.toString(),
+          data: formData, options: Options(headers: headers));
+      debugPrint(response.toString());
 
-    return response.data;
+      return response.data;
+    } on DioError catch (error) {
+      debugPrint(error.toString());
+    }
   }
 }

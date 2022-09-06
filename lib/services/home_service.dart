@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:cool_alert/cool_alert.dart';
+import 'package:external_path/external_path.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:record/record.dart';
 
 import '../rest/home_rest.dart';
@@ -27,9 +29,18 @@ class HomeService with ChangeNotifier {
   recordAudio() async {
     pathRecord = '';
     if (await record.hasPermission()) {
-      final tempDir = await getTemporaryDirectory();
+      var status = await Permission.storage.status;
+      if (status.isDenied) {
+        await Permission.storage.request();
+      }
+
+      final tempPath = await ExternalPath.getExternalStoragePublicDirectory(
+          ExternalPath.DIRECTORY_DOWNLOADS);
+
+      String path = await createFolderInAppDocDir('Bimbo delivery', tempPath);
+
       pathRecord =
-          '${tempDir.path}/${DateTime.now().millisecondsSinceEpoch.toString()}.m4a';
+          '$path${DateTime.now().millisecondsSinceEpoch.toString()}.wav';
 
       await record.start(
         path: pathRecord,
@@ -41,13 +52,30 @@ class HomeService with ChangeNotifier {
     }
   }
 
+  static Future<String> createFolderInAppDocDir(
+      String folderName, String path) async {
+    final Directory _appDocDirFolder = Directory('$path/$folderName/');
+
+    if (await _appDocDirFolder.exists()) {
+      return _appDocDirFolder.path;
+    } else {
+      final Directory _appDocDirNewFolder =
+          await _appDocDirFolder.create(recursive: true);
+      return _appDocDirNewFolder.path;
+    }
+  }
+
   stopRecord(BuildContext context) async {
     timer?.cancel();
     ampTimer?.cancel();
     isRecording = false;
     pathRecord = await record.stop();
+    File fileRecord = File(pathRecord!);
+    if (fileRecord.existsSync()) {
+      await _sendRecord(context, fileRecord);
+    }
+
     notifyListeners();
-    _sendRecord(context, pathRecord!);
 
     ///test audio record
     /*
@@ -75,16 +103,18 @@ class HomeService with ChangeNotifier {
     });
   }
 
-  _sendRecord(BuildContext context, String path) async {
+  _sendRecord(BuildContext context, File file) async {
     EasyLoading.show();
-    await _api.sendRecord(context, path).then((dynamic lstResponse) async {
-      if (lstResponse != null) {}
+    await _api.sendRecord(context, file).then((dynamic lstResponse) async {
+      if (lstResponse != null) {
+        debugPrint(lstResponse);
+      }
     }).catchError((Object error) {
       debugPrint(error.toString());
       CoolAlert.show(
         context: context,
         type: CoolAlertType.error,
-        text: 'Hubó un error al enviar el activo fijo.',
+        text: 'Hubó un error al enviar el audio.',
         title: 'Error',
         confirmBtnText: 'Cerrar',
         backgroundColor: Colors.red[900] as Color,

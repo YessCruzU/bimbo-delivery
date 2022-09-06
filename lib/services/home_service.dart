@@ -107,7 +107,15 @@ class HomeService with ChangeNotifier {
     EasyLoading.show();
     await _api.sendRecord(context, file).then((dynamic lstResponse) async {
       if (lstResponse != null) {
-        debugPrint(lstResponse);
+        debugPrint(lstResponse.toString());
+        CoolAlert.show(
+          context: context,
+          type: CoolAlertType.error,
+          text: lstResponse.toString(),
+          title: 'Mensaje',
+          confirmBtnText: 'Cerrar',
+          backgroundColor: Colors.red[900] as Color,
+        );
       }
     }).catchError((Object error) {
       debugPrint(error.toString());

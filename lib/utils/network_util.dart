@@ -125,6 +125,7 @@ class NetworkUtil {
 
       return response.data;
     } on DioError catch (error) {
+      return error;
       debugPrint(error.toString());
     }
   }

@@ -52,8 +52,8 @@ class NetworkUtil {
             context: context,
             barrierDismissible: false,
             type: CoolAlertType.warning,
-            text: 'Ocurrio un error al enviar la información',
-            title: 'Alerta',
+            text: resp['message'],
+            title: 'Error $statusCode',
             confirmBtnText: 'Cerrar',
             backgroundColor: Colors.yellow[800] as Color);
         return null;

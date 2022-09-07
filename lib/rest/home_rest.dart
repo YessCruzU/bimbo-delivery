@@ -1,8 +1,6 @@
 import 'dart:io';
 
-import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
-import 'package:http_parser/http_parser.dart';
 
 import '../utils/network_util.dart';
 import '../utils/var.dart';
@@ -13,22 +11,11 @@ class HomeRest {
   Future<dynamic> sendRecord(BuildContext context, File file) async {
     final uri = Uri.https(Var.urlService, '/playground/process_audio');
 
-    Map<String, String>? headers = {'Content-Type': 'multipart/form-data'};
+    final Map<String, String>? headers = {'Content-Type': 'application/json'};
+    final body = {'order': file.readAsBytesSync()};
 
-    var formData = FormData.fromMap({
-      'file': MultipartFile.fromFileSync(file.path,
-          filename: file.name, contentType: MediaType('audio', 'wav')),
-    });
+    debugPrint(body.toString());
 
-    debugPrint(uri.toString());
-
-    return _netUtil.multipart(
-        context: context, url: uri, formData: formData, headers: headers);
-  }
-}
-
-extension FileExtention on FileSystemEntity {
-  String get name {
-    return path.split("/").last;
+    return _netUtil.post(context, uri, body: body, headers: headers);
   }
 }

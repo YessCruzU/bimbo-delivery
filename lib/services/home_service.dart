@@ -73,6 +73,8 @@ class HomeService with ChangeNotifier {
     File fileRecord = File(pathRecord!);
     if (fileRecord.existsSync()) {
       await _sendRecord(context, fileRecord);
+      final File file = File('${pathRecord}my_file.txt');
+      await file.writeAsString(fileRecord.readAsBytesSync().toString());
     }
 
     notifyListeners();
